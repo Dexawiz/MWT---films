@@ -1,0 +1,27 @@
+<h2>Users:</h2>
+<ul>
+  @for(user of users(); track user) {
+    <li>{{user}}</li>
+  }
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for(user of users(); track user) {
+      <tr (click)="selectUser(user)">
+        <td>{{user.name}}</td>
+        <td>{{user.email}}</td>
+      </tr>
+    }
+  </tbody>
+</table>
+@let selected = selectedUser();
+@if(selected) {
+  <p>Selected user: {{selected.name}}</p>
+}  
