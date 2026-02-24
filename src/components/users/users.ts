@@ -13,7 +13,7 @@ export class Users implements OnInit {
   users = signal<User[]>([
     new User('Jakub','kubo@kubo.sk'), 
     new User('Julia', 'julia@kubo.sk', 0, undefined, 'heslo'),
-    {name: 'Peter', email: 'p@kubo.sk',password:''}
+    {name: 'Peter', email: 'p@kubo.sk',password:'',active: true, groups: []}
   ]);
   selectedUser = signal<User|null>(null);
   errorMessage = signal<string>('');

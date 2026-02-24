@@ -14,6 +14,11 @@ export class UsersTable implements OnInit{
   usersService = inject(UsersService);
 
   ngOnInit(): void {
-    this.usersService.getUsers().subscribe((u: User[]) => this.users.set(u));
+    this.usersService.getExtendedUsers().subscribe(
+      (u: User[]) => {
+        this.users.set(u);
+        console.log('users from server',u); 
+      }
+    );
   }
 }

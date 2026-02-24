@@ -3,12 +3,14 @@ import { User } from '../entities/user';
 import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Auth } from '../entities/auth';
+import { MessageService } from './message-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsersService {
   http = inject(HttpClient);
+  messageService = inject(MessageService);
   token = '';
   users: User[] = [
     new User('JakubService','kubo@kubo.sk'), 
@@ -26,9 +28,17 @@ export class UsersService {
       map(jsonUsers => jsonUsers.map(user => User.clone(user)))
     )
   }
+  getExtendedUsers(): Observable<User[]> {
+    return this.http.get<User[]>('http://localhost:8080/users/' + this.token).pipe(
+      map(jsonUsers => jsonUsers.map(user => User.clone(user)))
+    );
+  }
   login(auth: Auth): Observable<boolean> {
     return this.http.post('http://localhost:8080/login', auth, {responseType: 'text'}).pipe(
-      tap(token => this.token = token),
+      tap(token => {
+         this.token = token;
+         this.messageService.successMessage("User loggged in successfully");
+      }),
       map(token => true),
       catchError(error => {
         if (error instanceof HttpErrorResponse) {

@@ -2,7 +2,8 @@
   <mat-text-column name="id" headerText="ID"></mat-text-column>
   <mat-text-column name="name" headerText="Name"></mat-text-column>
   <mat-text-column name="email" headerText="E-mail"></mat-text-column>
+  <mat-text-column name="active" headerText="Active"></mat-text-column>
 
-  <tr mat-header-row *matHeaderRowDef="['id', 'name','email']"></tr>
-  <tr mat-row *matRowDef="let user; columns: ['id', 'name','email']"></tr>
+  <tr mat-header-row *matHeaderRowDef="['id', 'name','email', 'active']"></tr>
+  <tr mat-row *matRowDef="let user; columns: ['id', 'name','email', 'active']"></tr>
 </table>

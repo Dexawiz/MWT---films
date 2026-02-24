@@ -7,6 +7,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { Auth } from '../../entities/auth';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../services/users-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,7 @@ import { UsersService } from '../../services/users-service';
 })
 export class Login {
   usersService = inject(UsersService);
+  router = inject(Router);
   hide = signal(true);
   errorMessage = signal<string>('');
   auth = new Auth("Peter","sovy");
@@ -32,7 +34,7 @@ export class Login {
     this.usersService.login(this.auth).subscribe({
       next: success => {
         if (success) {
-          this.errorMessage.set('');
+          this.router.navigateByUrl('/users');
         } else {
           this.errorMessage.set("Wrong name or password, try again.");
         }
