@@ -30,11 +30,16 @@ export class Login {
   }
   onSubmit() {
     this.usersService.login(this.auth).subscribe({
-      next: token => {
-        console.log("Prišiel token:" , token);
-        this.errorMessage.set('');
+      next: success => {
+        if (success) {
+          this.errorMessage.set('');
+        } else {
+          this.errorMessage.set("Wrong name or password, try again.");
+        }
       },
-      error: err => this.errorMessage.set("Wrong name or password, try again.")
+      error: err => {
+        this.errorMessage.set("Server is down.");
+      }
     });
   }
 }
