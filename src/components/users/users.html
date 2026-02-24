@@ -1,4 +1,8 @@
 <h2>Users:</h2>
+@if(errorMessage()) {
+  <div class="message">{{errorMessage()}}</div>
+}
+
 <ul>
   @for(user of users(); track user) {
     <li>{{user}}</li>
