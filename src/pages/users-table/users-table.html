@@ -3,7 +3,24 @@
   <mat-text-column name="name" headerText="Name"></mat-text-column>
   <mat-text-column name="email" headerText="E-mail"></mat-text-column>
   <mat-text-column name="active" headerText="Active"></mat-text-column>
+  <!-- <mat-text-column name="lastLogin" headerText="Last login"></mat-text-column> -->
+  <ng-container matColumnDef="last_login">
+    <th mat-header-cell *matHeaderCellDef>Last Login</th>
+    <td mat-cell *matCellDef="let user">{{user.lastLogin | date : 'd.M.yyyy h:mm:ss'}}</td>
+  </ng-container>
+  <ng-container matColumnDef="groups">
+    <th mat-header-cell *matHeaderCellDef>Groups</th>
+    <td mat-cell *matCellDef="let user">
+      {{user.groups | groupsToString}}
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="permissions">
+    <th mat-header-cell *matHeaderCellDef>Permissions</th>
+    <td mat-cell *matCellDef="let user">
+      {{user.groups | groupsToString: 'permissions'}}
+    </td>
+  </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="['id', 'name','email', 'active']"></tr>
-  <tr mat-row *matRowDef="let user; columns: ['id', 'name','email', 'active']"></tr>
+  <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+  <tr mat-row *matRowDef="let user; columns: columns()"></tr>
 </table>

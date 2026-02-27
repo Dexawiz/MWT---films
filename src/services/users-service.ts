@@ -16,17 +16,25 @@ export class UsersService {
     new User('JakubService','kubo@kubo.sk'), 
     new User('JuliaService', 'julia@kubo.sk', 0, undefined, 'heslo')
   ];
-  loggedUser = signal<string>('');
+  loggedUser = signal<string>(this.savedUserName);
 
   set token(value: string) {
     localStorage.setItem('filmsToken', value);
     if (!value) {
-      this.loggedUser.set('');
+      this.savedUserName = '';
     }
   }
 
   get token(): string {
     return localStorage.getItem('filmsToken') || '';
+  }
+
+  set savedUserName(value: string) {
+    localStorage.setItem('filmsUserName', value);
+    this.loggedUser.set(value);
+  }
+  get savedUserName(): string {
+    return localStorage.getItem('filmsUserName') || '';
   }
 
   getLocalUsers(): User[] {
@@ -51,7 +59,7 @@ export class UsersService {
     return this.http.post('http://localhost:8080/login', auth, {responseType: 'text'}).pipe(
       tap(token => {
          this.token = token;
-         this.loggedUser.set(auth.name);
+         this.savedUserName = auth.name;
          this.messageService.successMessage("User loggged in successfully");
       }),
       map(token => true),
