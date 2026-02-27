@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { User } from '../entities/user';
-import { catchError, map, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, EMPTY, map, Observable, of, tap, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Auth } from '../entities/auth';
 import { MessageService } from './message-service';
@@ -25,12 +25,14 @@ export class UsersService {
   }
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>('http://localhost:8080/users').pipe(
-      map(jsonUsers => jsonUsers.map(user => User.clone(user)))
+      map(jsonUsers => jsonUsers.map(user => User.clone(user))),
+      catchError(error => this.processError(error))
     )
   }
   getExtendedUsers(): Observable<User[]> {
     return this.http.get<User[]>('http://localhost:8080/users/' + this.token).pipe(
-      map(jsonUsers => jsonUsers.map(user => User.clone(user)))
+      map(jsonUsers => jsonUsers.map(user => User.clone(user))),
+      catchError(error => this.processError(error))
     );
   }
   login(auth: Auth): Observable<boolean> {
@@ -40,19 +42,26 @@ export class UsersService {
          this.messageService.successMessage("User loggged in successfully");
       }),
       map(token => true),
-      catchError(error => {
-        if (error instanceof HttpErrorResponse) {
-          if (error.status === 0) {
-            console.error("server not available");
-            return throwError(() => error);
-          }
-          if (error.status == 401) {
-            return of(false);
-          }
-        }
-        console.error("http error", error);
-        return throwError(() => error);
-      })
+      catchError(error => this.processError(error))
     );
+  }
+
+  private processError(error: any): Observable<never> {
+    if (error instanceof HttpErrorResponse) {
+          if (error.status === 0) {
+            this.messageService.errorMessage("Server not available");
+            return EMPTY;
+          }
+          if (error.status >= 400 && error.status < 500) {
+            const message = error.error.errorMessage || JSON.parse(error.error).errorMessage;
+            this.messageService.errorMessage(message);
+            return EMPTY;
+          }
+          if (error.status >= 500) {
+            this.messageService.errorMessage("Server has some serious problems, contact administrator.");
+          }
+    }
+    console.error('HTTP connection error',error);
+    return EMPTY;
   }
 }
