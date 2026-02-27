@@ -1,6 +1,11 @@
 <mat-toolbar>
   <span>Films project</span>
-  <a href="/users" matButton><mat-icon>group</mat-icon> Users</a>
+  <a routerLink="/users" matButton routerLinkActive="active"><mat-icon>group</mat-icon> Users</a>
   <span class="spacer"></span>
-  <a href="/login" matButton><mat-icon>login</mat-icon> Login</a>
+  @if(loggedUser()) {
+    <span class="username">{{loggedUser()}}</span>
+    <button matButton (click)="logout()"><mat-icon>logout</mat-icon> Logout</button>
+  } @else {
+    <a routerLink="/login" matButton  routerLinkActive="active"><mat-icon>login</mat-icon> Login</a>
+  }
 </mat-toolbar>
