@@ -9,6 +9,8 @@ import { MessageService } from './message-service';
   providedIn: 'root',
 })
 export class UsersService {
+  serverUrl = "http://localhost:8080/";
+
   http = inject(HttpClient);
   messageService = inject(MessageService);
 //  token = '';
@@ -44,19 +46,19 @@ export class UsersService {
     return of(this.users);
   }
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>('http://localhost:8080/users').pipe(
+    return this.http.get<User[]>(this.serverUrl + 'users').pipe(
       map(jsonUsers => jsonUsers.map(user => User.clone(user))),
       catchError(error => this.processError(error))
     )
   }
   getExtendedUsers(): Observable<User[]> {
-    return this.http.get<User[]>('http://localhost:8080/users/' + this.token).pipe(
+    return this.http.get<User[]>(`${this.serverUrl}users/${this.token}`).pipe(
       map(jsonUsers => jsonUsers.map(user => User.clone(user))),
       catchError(error => this.processError(error))
     );
   }
   login(auth: Auth): Observable<boolean> {
-    return this.http.post('http://localhost:8080/login', auth, {responseType: 'text'}).pipe(
+    return this.http.post(this.serverUrl + 'login', auth, {responseType: 'text'}).pipe(
       tap(token => {
          this.token = token;
          this.savedUserName = auth.name;
@@ -67,7 +69,7 @@ export class UsersService {
     );
   }
   logout():Observable<boolean> {
-    return this.http.get<string>('http://localhost:8080/logout/' + this.token).pipe(
+    return this.http.get<string>(`${this.serverUrl}logout/${this.token}`).pipe(
       map(() => {
         this.token = '';
         this.messageService.successMessage("Logged out successfully");
@@ -80,6 +82,13 @@ export class UsersService {
       })
     );
   }
+
+  register(user: User): Observable<User> {
+    return this.http.post<User>(this.serverUrl + 'register', user).pipe(
+      catchError(error => this.processError(error))
+    )
+  }
+
   private processError(error: any): Observable<never> {
     if (error instanceof HttpErrorResponse) {
           if (error.status === 0) {
