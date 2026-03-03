@@ -1,4 +1,4 @@
-<form (ngSubmit)="onSubmit()">
+<form (ngSubmit)="onSubmit()" #formModel="ngForm">
 <mat-card class="login-card" appearance="outlined">
   <mat-card-header>
     <mat-card-title>Please, Log in</mat-card-title>
@@ -10,7 +10,18 @@
     }
     <mat-form-field>
       <mat-label>User name</mat-label>
-      <input matInput [(ngModel)]="auth.name" name="username">
+      <input matInput [(ngModel)]="auth.name" name="username" required minlength="4" #nameField="ngModel">
+      <mat-hint>Insert user name</mat-hint>
+      <mat-error>
+        @if(nameField.invalid) {
+          @if (nameField.errors && nameField.errors['required']) {
+            User name in required
+          }
+          @if (nameField.errors && nameField.errors['minlength']) {
+            User must have at least {{nameField.errors['minlength']['requiredLength']}} characters, but has only {{nameField.errors['minlength']['actualLength']}} 
+          }
+        }
+      </mat-error>
     </mat-form-field>
     <mat-form-field>
       <mat-label>Enter your password</mat-label>
@@ -29,7 +40,7 @@
 
   </mat-card-content>
   <mat-card-actions>
-    <button matButton class="login_btn">Login</button>
+    <button matButton class="login_btn" [disabled]="formModel.invalid">Login</button>
   </mat-card-actions>
 </mat-card>
 </form>

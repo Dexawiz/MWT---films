@@ -30,6 +30,9 @@ export class Login {
   nameChanged(event: any) {
     this.auth.name = event.target.value;
   }
+  getJson(value:any) {
+    return JSON.stringify(value);
+  }
   onSubmit() {
     this.usersService.login(this.auth).subscribe({
       next: success => {
