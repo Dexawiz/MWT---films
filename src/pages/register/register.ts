@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { email, form, FormField, minLength, pattern, required, validate } from '@angular/forms/signals';
+import { email, form, FormField, minLength, PathKind, pattern, required, SchemaPath, validate, validateAsync } from '@angular/forms/signals';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { zxcvbn, zxcvbnOptions, ZxcvbnResult } from '@zxcvbn-ts/core'
 import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common'
 import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en'
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-register',
@@ -48,8 +49,55 @@ export class Register {
       } else {
         return null;
       }
-    })
+    }),
+    validate(schemaPath.password2, ({value, valueOf})=> {
+      const password1 = valueOf(schemaPath.password);
+      const password2 = value();
+      if (password1 === password2) {
+        return null;
+      }
+      return {kind:'differntPasswords', message: 'Passwords do not match'};
+    }),
+    this.userConflictsValidator(schemaPath.login),
+    this.userConflictsValidator(schemaPath.email)
+    // validateAsync(schemaPath.login, {
+    //   params: ({value}) => {
+    //     const name = value();
+    //     return new User(name, '')
+    //   },
+    //   factory:(params) => rxResource<string[], User>({
+    //     params: () => params() || new User('',''),
+    //     stream: ({params: user}) => this.usersService.userConflicts(user)
+    //   }),
+    //   onSuccess: (result:string[], context) => {
+    //     if (result.length == 0)
+    //       return null;
+    //     return {kind: 'serverConflict', message: 'User already present on server'}
+    //   },
+    //   onError: error => null
+    // })
   });
+
+  userConflictsValidator(field: SchemaPath<string, 1, PathKind.Child>) {
+    validateAsync(field, {
+      params: ({value,key}) => {
+        const name = key() === 'login' ? value() : '';
+        const email = key() === 'email' ? value() : '';
+        return new User(name, email)
+      },
+      factory:(params) => rxResource<string[], User>({
+        params: () => params() || new User('',''),
+        stream: ({params: user}) => this.usersService.userConflicts(user)
+      }),
+      onSuccess: (result:string[], context) => {
+        if (result.length == 0)
+          return null;
+        const firstWord = context.key() === 'login' ? "User" : "E-mail"
+        return {kind: 'serverConflict', message: firstWord + ' already present on server'}
+      },
+      onError: error => null
+    })
+  }
 
   constructor() {
     const options = {

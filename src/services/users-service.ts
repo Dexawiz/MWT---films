@@ -89,6 +89,12 @@ export class UsersService {
     )
   }
 
+  userConflicts(user: User): Observable<string[]> {
+    return this.http.post<string[]>(this.serverUrl + 'user-conflicts', user).pipe(
+      catchError(error => this.processError(error))
+    )
+  }
+
   private processError(error: any): Observable<never> {
     if (error instanceof HttpErrorResponse) {
           if (error.status === 0) {

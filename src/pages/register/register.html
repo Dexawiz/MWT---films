@@ -47,10 +47,15 @@
     <mat-form-field>
       <mat-label>Repeat your password</mat-label>
       <input matInput [type]="hide() ? 'password' : 'text'" [formField]="registerForm.password2">
+      <mat-error>
+        @if(registerForm.password2().invalid()) {
+          {{registerForm.password2().errors()[0].message}}
+        }
+      </mat-error>
     </mat-form-field>
   </mat-card-content>
   <mat-card-actions>
-    <button matButton class="login_btn">Sign up</button>
+    <button matButton class="login_btn" [disabled]="registerForm().invalid()">Sign up</button>
   </mat-card-actions>
 </mat-card>
 </form>
