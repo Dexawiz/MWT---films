@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { User } from '../entities/user';
-import { catchError, EMPTY, map, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, defaultIfEmpty, EMPTY, map, Observable, of, tap, throwError } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Auth } from '../entities/auth';
 import { MessageService } from './message-service';
@@ -92,6 +92,17 @@ export class UsersService {
   userConflicts(user: User): Observable<string[]> {
     return this.http.post<string[]>(this.serverUrl + 'user-conflicts', user).pipe(
       catchError(error => this.processError(error))
+    )
+  }
+
+  deleteUser(userId: number): Observable<boolean> {
+    return this.http.delete(`${this.serverUrl}user/${userId}/${this.token}`).pipe(
+      map(() => {
+        this.messageService.successMessage("User deleted");
+        return true;
+      }),
+      catchError(error => this.processError(error)),
+      defaultIfEmpty(false)
     )
   }
 
