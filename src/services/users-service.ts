@@ -4,6 +4,7 @@ import { catchError, defaultIfEmpty, EMPTY, map, Observable, of, tap, throwError
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Auth } from '../entities/auth';
 import { MessageService } from './message-service';
+import { Group } from '../entities/group';
 
 @Injectable({
   providedIn: 'root',
@@ -103,6 +104,12 @@ export class UsersService {
       }),
       catchError(error => this.processError(error)),
       defaultIfEmpty(false)
+    )
+  }
+  groups(): Observable<Group[]> {
+    return this.http.get<Group[]>(this.serverUrl + "groups").pipe(
+      map(jsongroups => jsongroups.map(g => Group.clone(g))),
+      catchError(error => this.processError(error))
     )
   }
 

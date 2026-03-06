@@ -1,0 +1,47 @@
+<form (submit)="onSubmit($event)">
+<mat-card class="login-card" appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Insert new user</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-form-field>
+      <mat-label>User name</mat-label>
+      <input matInput>
+      <mat-hint>Insert user name</mat-hint>
+      <mat-error>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>E-mail</mat-label>
+      <input matInput>
+      <mat-hint>Insert e-mail address</mat-hint>
+      <mat-error>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput [type]="hide() ? 'password' : 'text'">
+      <button
+        type="button"
+        matIconButton
+        matSuffix
+        (click)="clickEvent($event)"
+        [attr.aria-label]="'Hide password'"
+        [attr.aria-pressed]="hide()"
+      >
+        <mat-icon>{{hide() ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
+      <mat-error>
+      </mat-error>
+    </mat-form-field>
+    <mat-slide-toggle>User is active</mat-slide-toggle>
+    <p>User is member of groups:</p>
+    @for(group of allGroups(); track group.id) {
+      <mat-checkbox>{{group.name}}</mat-checkbox>
+    }
+  </mat-card-content>
+  <mat-card-actions>
+    <button matButton class="login_btn">Save user</button>
+  </mat-card-actions>
+</mat-card>
+</form>

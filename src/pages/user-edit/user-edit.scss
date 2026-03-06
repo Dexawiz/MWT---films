@@ -1,0 +1,13 @@
+.login-card {
+  width: min(100%, 500px);
+  margin-inline: auto;
+}
+.login-card mat-form-field {
+  width: 100%;
+}
+.login_btn {
+  margin-inline: auto;
+}
+mat-checkbox {
+  display: block;
+}

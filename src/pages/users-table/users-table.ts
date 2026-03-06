@@ -7,10 +7,11 @@ import { GroupsToStringPipe } from '../../pipes/groups-to-string-pipe';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import { DialogService } from '../../services/dialog-service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-users-table',
-  imports: [MatTableModule, DatePipe, GroupsToStringPipe, MatButtonModule, MatIconModule],
+  imports: [MatTableModule, DatePipe, GroupsToStringPipe, MatButtonModule, MatIconModule, RouterLink],
   templateUrl: './users-table.html',
   styleUrl: './users-table.scss',
 })
