@@ -1,5 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import {MatTableModule} from '@angular/material/table';
+import { AfterViewInit, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { User } from '../../entities/user';
 import { UsersService } from '../../services/users-service';
 import { DatePipe } from '@angular/common';
@@ -8,14 +8,15 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import { DialogService } from '../../services/dialog-service';
 import { RouterLink } from '@angular/router';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 
 @Component({
   selector: 'app-users-table',
-  imports: [MatTableModule, DatePipe, GroupsToStringPipe, MatButtonModule, MatIconModule, RouterLink],
+  imports: [MatTableModule, DatePipe, GroupsToStringPipe, MatButtonModule, MatIconModule, RouterLink, MatPaginatorModule],
   templateUrl: './users-table.html',
   styleUrl: './users-table.scss',
 })
-export class UsersTable implements OnInit{
+export class UsersTable implements OnInit, AfterViewInit {
   users = signal<User[]>([]);
   usersService = inject(UsersService);
   dialogService = inject(DialogService);
@@ -28,15 +29,22 @@ export class UsersTable implements OnInit{
       return ['id', 'name','email'];
     }
   });
+  dataSource = new MatTableDataSource<User>();
+  paginator = viewChild.required(MatPaginator);
 
   ngOnInit(): void {
-    this.downloadUsers();
+    this.downloadUsers(); 
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator();
   }
 
   downloadUsers() {
     this.usersService.getExtendedUsers().subscribe(
       (u: User[]) => {
         this.users.set(u);
+        this.dataSource.data = u;
         console.log('users from server',u); 
       }
     );

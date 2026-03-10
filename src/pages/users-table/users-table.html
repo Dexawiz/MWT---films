@@ -1,4 +1,4 @@
-<table mat-table [dataSource]="users()">
+<table mat-table [dataSource]="dataSource">
   <mat-text-column name="id" headerText="ID"></mat-text-column>
   <mat-text-column name="name" headerText="Name"></mat-text-column>
   <mat-text-column name="email" headerText="E-mail"></mat-text-column>
@@ -35,5 +35,10 @@
   <tr mat-header-row *matHeaderRowDef="columns()"></tr>
   <tr mat-row *matRowDef="let user; columns: columns()"></tr>
 </table>
-    
+<mat-paginator [length]="100"
+              [pageSize]="2"
+              [pageSizeOptions]="[2, 5, 10, 25, 100]"
+              aria-label="Select page">
+</mat-paginator>
+
 <a routerLink="/user/new" matButton routerLinkActive="active"><mat-icon>person_add</mat-icon> New user</a>
