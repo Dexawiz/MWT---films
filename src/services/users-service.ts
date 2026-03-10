@@ -52,6 +52,12 @@ export class UsersService {
       catchError(error => this.processError(error))
     )
   }
+  getUser(id: number):Observable<User> {
+    return this.http.get<User>(this.serverUrl + 'user/' + id + '/' + this.token).pipe(
+      map(jsonUser => User.clone(jsonUser)),
+      catchError(error => this.processError(error))
+    )
+  }
   getExtendedUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.serverUrl}users/${this.token}`).pipe(
       map(jsonUsers => jsonUsers.map(user => User.clone(user))),
@@ -109,6 +115,12 @@ export class UsersService {
   groups(): Observable<Group[]> {
     return this.http.get<Group[]>(this.serverUrl + "groups").pipe(
       map(jsongroups => jsongroups.map(g => Group.clone(g))),
+      catchError(error => this.processError(error))
+    )
+  }
+  saveUser(user:User): Observable<User> {
+    return this.http.post<User>(`${this.serverUrl}users/${this.token}`, user).pipe(
+      map(jsonUser => User.clone(jsonUser)),
       catchError(error => this.processError(error))
     )
   }

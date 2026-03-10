@@ -23,6 +23,9 @@
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef></th>
     <td mat-cell *matCellDef="let user">
+      <a matIconButton aria-label="delete user" routerLink="/user/edit/{{user.id}}">
+        <mat-icon>edit</mat-icon>
+      </a>
       <button matIconButton aria-label="delete user" (click)="deleteUser(user)">
         <mat-icon class="red">delete</mat-icon>
       </button>
@@ -33,4 +36,4 @@
   <tr mat-row *matRowDef="let user; columns: columns()"></tr>
 </table>
     
-<a routerLink="/user-new" matButton routerLinkActive="active"><mat-icon>person_add</mat-icon> New user</a>
+<a routerLink="/user/new" matButton routerLinkActive="active"><mat-icon>person_add</mat-icon> New user</a>
