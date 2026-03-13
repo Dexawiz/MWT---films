@@ -11,6 +11,8 @@ export const routes: Routes = [
   {path: 'register', component: Register},
   {path: 'user/new', component: UserEdit, data: {myValue: 'haha'}},
   {path: 'user/edit/:id', component: UserEdit},
+  {path: 'groups', 
+    loadChildren:() => import('../modules/groups/groups-module').then(mod => mod.GroupsModule)},
   {path: '', redirectTo:'/login', pathMatch: 'full'},
   {path: '**', component: PageNotFound}
 ];

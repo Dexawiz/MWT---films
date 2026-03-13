@@ -1,6 +1,7 @@
 <mat-toolbar>
   <span>Films project</span>
   <a routerLink="/users" matButton routerLinkActive="active"><mat-icon>group</mat-icon> Users</a>
+  <a routerLink="/groups" matButton routerLinkActive="active"><mat-icon>diversity_3</mat-icon> Groups</a>
   <span class="spacer"></span>
   @if(loggedUser()) {
     <span class="username">{{loggedUser()}}</span>

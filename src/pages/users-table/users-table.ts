@@ -1,18 +1,17 @@
 import { AfterViewInit, Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatTableDataSource} from '@angular/material/table';
 import { User } from '../../entities/user';
 import { UsersService } from '../../services/users-service';
 import { DatePipe } from '@angular/common';
 import { GroupsToStringPipe } from '../../pipes/groups-to-string-pipe';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
 import { DialogService } from '../../services/dialog-service';
 import { RouterLink } from '@angular/router';
-import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
-
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import { MaterialModule } from '../../modules/material-module';
 @Component({
   selector: 'app-users-table',
-  imports: [MatTableModule, DatePipe, GroupsToStringPipe, MatButtonModule, MatIconModule, RouterLink, MatPaginatorModule],
+  imports: [MaterialModule, DatePipe, GroupsToStringPipe, RouterLink],
   templateUrl: './users-table.html',
   styleUrl: './users-table.scss',
 })
@@ -24,13 +23,14 @@ export class UsersTable implements OnInit, AfterViewInit {
   // columns = signal<string[]>(['id', 'name','email', 'active', 'last_login']);
   columns = computed(() => {
     if (this.loggedUser()) {
-      return ['id', 'name','email', 'active', 'last_login', 'groups', 'permissions', 'actions'];
+      return ['id', 'name','email', 'active', 'lastLogin', 'groups', 'permissions', 'actions'];
     } else {
       return ['id', 'name','email'];
     }
   });
   dataSource = new MatTableDataSource<User>();
   paginator = viewChild.required(MatPaginator);
+  sorter = viewChild.required(MatSort);
 
   ngOnInit(): void {
     this.downloadUsers(); 
@@ -38,6 +38,27 @@ export class UsersTable implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator();
+    this.dataSource.sort = this.sorter();
+    this.dataSource.filterPredicate = (user: User, filter: string) => {
+      let strings = [user.name, user.email, ''+user.active];
+      strings = [...strings, ...(user.groups.map(g => g.name))];
+      strings = [...strings, ...(user.groups.map(g => g.permissions).flat())];
+      if (strings.map(name => name.toLocaleLowerCase())
+                 .some(name => name.includes(filter))) return true;
+      return false;
+    }
+    this.dataSource.sortingDataAccessor = (user: User, headerName: string) => {
+      switch(headerName){
+        case 'groups':
+          return user.groups.map(g => g.name).join(' ');
+        case 'name':
+          return user.name;
+        case 'lastLogin':
+          return user.lastLogin?.toISOString() || '';
+        default:
+          return ''
+      }
+    }
   }
 
   downloadUsers() {
@@ -63,5 +84,10 @@ export class UsersTable implements OnInit, AfterViewInit {
         }
       })
     }
+  }
+  onFilter(event: any) {
+    const filterValue = (event.target.value as string).trim().toLocaleLowerCase();
+    this.dataSource.filter = filterValue;
+    this.paginator().firstPage();
   }
 }
