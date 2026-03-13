@@ -20,7 +20,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
-export class Register {
+export default class Register {
   usersService = inject(UsersService);
   messageService = inject(MessageService);
   router = inject(Router);
