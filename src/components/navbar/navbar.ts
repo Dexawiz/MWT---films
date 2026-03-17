@@ -3,7 +3,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import { Router, RouterLink, RouterLinkActive } from "@angular/router";
-import { UsersService } from '../../services/users-service';
+import { DEFAULT_NAVIGATE_AFTER_LOGIN, UsersService } from '../../services/users-service';
 
 @Component({
   selector: 'app-navbar',
@@ -20,6 +20,7 @@ export class Navbar implements OnInit{
     
   }
   logout() {
+    this.usersService.navigateAfterLogin = DEFAULT_NAVIGATE_AFTER_LOGIN;
     this.usersService.logout().subscribe(success =>
       this.router.navigateByUrl('/login'));
   }

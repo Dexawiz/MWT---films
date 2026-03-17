@@ -6,9 +6,10 @@ import { GroupEdit } from "./group-edit/group-edit";
 export const routes: Routes = [
   {path: '', component: GroupsMenu,
     children: [
-      {path: '', component: GroupsList, pathMatch: 'full'},
+      {path: 'list', component: GroupsList},
       {path: 'new', component: GroupEdit},
-      {path: 'edit/:id', component: GroupEdit}
+      {path: 'edit/:id', component: GroupEdit},
+      {path: '', redirectTo:'list', pathMatch: 'full'},
     ]
   }
 ];

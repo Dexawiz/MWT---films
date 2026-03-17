@@ -1,6 +1,12 @@
 <h2>List of groups</h2>
 <ul>
   @for(group of groups(); track group.id) {
-    <li>{{group.name}}</li>
+    <li>{{group.name}}  
+        <button matIconButton aria-label="edit user" (click)="onEditClick(group)"> 
+          <mat-icon>edit</mat-icon>
+        </button>
+    </li>
   }
 </ul>
+<button (click)="selectedGroup.set(undefined)">New Group</button>
+<app-group-edit-child [group]="selectedGroup()" (groupSaved)="onGroupSaved($event)"></app-group-edit-child>

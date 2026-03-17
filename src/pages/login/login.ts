@@ -37,7 +37,7 @@ export class Login {
     this.usersService.login(this.auth).subscribe({
       next: success => {
         if (success) {
-          this.router.navigateByUrl('/users');
+          this.router.navigateByUrl(this.usersService.navigateAfterLogin);
         } else {
           this.errorMessage.set("Wrong name or password, try again.");
         }

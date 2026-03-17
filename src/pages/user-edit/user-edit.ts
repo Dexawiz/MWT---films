@@ -13,6 +13,8 @@ import { MessageService } from '../../services/message-service';
 import { User } from '../../entities/user';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { concat, filter, map, Observable, switchMap, tap } from 'rxjs';
+import { CanComponentDeactivate } from '../../guards/can-deactivate-guard';
+import { DialogService } from '../../services/dialog-service';
 
 @Component({
   selector: 'app-user-edit',
@@ -20,15 +22,17 @@ import { concat, filter, map, Observable, switchMap, tap } from 'rxjs';
   templateUrl: './user-edit.html',
   styleUrl: './user-edit.scss',
 })
-export class UserEdit implements OnInit{
+export class UserEdit implements OnInit, CanComponentDeactivate {
   hide = signal(true);
   usersService = inject(UsersService);
   messsageService = inject(MessageService);
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
+  dialogService = inject(DialogService);
   allGroups = signal<Group[]>([]);
   title = signal('Insert new user');
   userId = signal<number|undefined>(undefined);
+  saved = false;
 
   userModel = new FormGroup({
     login: new FormControl('', {validators: Validators.required,
@@ -111,6 +115,7 @@ export class UserEdit implements OnInit{
                           userGroups);
     this.usersService.saveUser(user).subscribe(savedUser => {
       this.messsageService.successMessage("User " + savedUser.name + " saved successfully");
+      this.saved = true;
       this.router.navigateByUrl('/users');
     });
   }
@@ -118,7 +123,15 @@ export class UserEdit implements OnInit{
     return JSON.stringify(obj);
   }
 
-
+  canDeactivate(): boolean | Observable<boolean> {
+    console.log('deactivating');
+    if (this.saved) return true;
+    const edited = this.userModel.dirty;
+    if (edited) {
+      return this.dialogService.confirm('Form not saved', 'Do you really want to leave without saving this user?')
+    }
+    return true;
+  }
 
   get login(): FormControl<string|undefined> {
     return this.userModel.get('login') as FormControl;

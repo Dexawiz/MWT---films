@@ -6,6 +6,8 @@ import { Auth } from '../entities/auth';
 import { MessageService } from './message-service';
 import { Group } from '../entities/group';
 
+export const DEFAULT_NAVIGATE_AFTER_LOGIN = '/users';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -14,6 +16,7 @@ export class UsersService {
 
   http = inject(HttpClient);
   messageService = inject(MessageService);
+  navigateAfterLogin = DEFAULT_NAVIGATE_AFTER_LOGIN;
 //  token = '';
   users: User[] = [
     new User('JakubService','kubo@kubo.sk'), 
@@ -123,6 +126,15 @@ export class UsersService {
       map(jsonUser => User.clone(jsonUser)),
       catchError(error => this.processError(error))
     )
+  }
+  saveGroup(group:Group): Observable<Group> {
+    return this.http.post<Group>(`${this.serverUrl}groups/${this.token}`, group).pipe(
+      map(jsonGroup => Group.clone(jsonGroup)),
+      catchError(error => this.processError(error))
+    )
+  }
+  isLoggedIn(): boolean {
+    return !!this.token;
   }
 
   private processError(error: any): Observable<never> {

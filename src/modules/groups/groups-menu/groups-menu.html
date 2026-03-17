@@ -1,6 +1,6 @@
 <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-  <a mat-tab-link routerLink="./" routerLinkActive="activeLink">Groups list</a>
-  <a mat-tab-link routerLink="./new" routerLinkActive="activeLink">New group</a>
+  <a mat-tab-link routerLink="./list" routerLinkActive="activeLink" (isActiveChange)="setActiveTab('list', $event)" [active]="activeTab() == 'list'">Groups list</a>
+  <a mat-tab-link routerLink="./new" routerLinkActive="activeLink" (isActiveChange)="setActiveTab('newGroup', $event)" [active]="activeTab() == 'newGroup'">New group</a>
 </nav>
 <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 <router-outlet></router-outlet>

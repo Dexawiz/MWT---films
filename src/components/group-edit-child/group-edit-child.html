@@ -1,0 +1,15 @@
+<form (submit)="onSave($event)">
+  <mat-form-field>
+    <mat-label>Group name</mat-label>
+    <input matInput [formField]="groupForm.name">
+    <mat-error>
+    </mat-error>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Permissions</mat-label>
+    <input matInput [formField]="groupForm.permissions">
+    <mat-error>
+    </mat-error>
+  </mat-form-field>
+  <button matButton type="submit">Save group</button>
+</form>
