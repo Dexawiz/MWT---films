@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable } from 'rxjs';
 import { Film } from '../entities/film';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { UsersService } from './users-service';
 
@@ -17,15 +17,22 @@ export class FilmsService {
     return this.usersService.token;
   }
 
-  getTokenHeader(): {headers: {[header:string]: string}} | undefined {
+  getTokenHeader(): {[header:string]: string} | undefined {
     if (this.token) {
-      return {headers: {'X-Auth-Token': this.token}}
+      return {'X-Auth-Token': this.token}
     }
     return undefined;
   }
 
-  getFilms(): Observable<FilmsResponse> {
-    return this.http.get<FilmsResponse>(this.url + 'films', this.getTokenHeader()).pipe(
+  getFilms(orderBy?:string, descending?: boolean, indexFrom?: number, indexTo?: number, search?: string): Observable<FilmsResponse> {
+    let httpParams: HttpParams = new HttpParams();
+    if (orderBy) httpParams = httpParams.set('orderBy', orderBy);
+    if (descending) httpParams = httpParams.set('descending', descending);
+    if (indexFrom) httpParams = httpParams.set('indexFrom', indexFrom);
+    if (indexTo) httpParams = httpParams.set('indexTo', indexTo);
+    if (search) httpParams = httpParams.set('search', search);
+    let options = { params: httpParams, headers: this.getTokenHeader()};
+    return this.http.get<FilmsResponse>(this.url + 'films', options).pipe(
       catchError(error =>  this.usersService.processError(error))
     );
   }
