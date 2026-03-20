@@ -5,6 +5,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Auth } from '../entities/auth';
 import { MessageService } from './message-service';
 import { Group } from '../entities/group';
+import { environment } from '../environments/environment';
 
 export const DEFAULT_NAVIGATE_AFTER_LOGIN = '/users';
 
@@ -12,8 +13,8 @@ export const DEFAULT_NAVIGATE_AFTER_LOGIN = '/users';
   providedIn: 'root',
 })
 export class UsersService {
-  serverUrl = "http://localhost:8080/";
-
+//  serverUrl = "http://localhost:8080/";
+  serverUrl = environment.restServerUrl;
   http = inject(HttpClient);
   messageService = inject(MessageService);
   navigateAfterLogin = DEFAULT_NAVIGATE_AFTER_LOGIN;
@@ -135,6 +136,12 @@ export class UsersService {
   }
   isLoggedIn(): boolean {
     return !!this.token;
+  }
+  getGroup(id: number): Observable<Group> {
+    return this.http.get<Group>(`${this.serverUrl}group/${id}`).pipe(
+      map(jsonGroup => Group.clone(jsonGroup)),
+      catchError(error => this.processError(error))
+    );
   }
 
   private processError(error: any): Observable<never> {
