@@ -144,7 +144,7 @@ export class UsersService {
     );
   }
 
-  private processError(error: any): Observable<never> {
+  processError(error: any): Observable<never> {
     if (error instanceof HttpErrorResponse) {
           if (error.status === 0) {
             this.messageService.errorMessage("Server not available");

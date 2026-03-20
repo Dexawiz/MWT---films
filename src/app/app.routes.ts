@@ -25,6 +25,9 @@ export const routes: Routes = [
     loadChildren:() => import('../modules/groups/groups-module').then(mod => mod.GroupsModule),
     canMatch:[authMatchGuard]
   },
+  {path: 'films',
+    loadComponent: () => import('../pages/films/films')
+  },
   {path: '', redirectTo:'/login', pathMatch: 'full'},
   {path: '**', component: PageNotFound}
 ];
