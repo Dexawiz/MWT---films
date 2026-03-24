@@ -5,6 +5,9 @@ import { PageNotFound } from '../pages/page-not-found/page-not-found';
 import { UserEdit } from '../pages/user-edit/user-edit';
 import { authGuard, authMatchGuard } from '../guards/auth-guard';
 import { canDeactivateGuard } from '../guards/can-deactivate-guard';
+import { provideHttpClient, withInterceptors, withRequestsMadeViaParent } from '@angular/common/http';
+import { authInterceptor } from '../interceptors/auth-interceptor';
+import Films from '../pages/films/films';
 
 export const routes: Routes = [
   {path: 'users', component: UsersTable, 
@@ -26,7 +29,11 @@ export const routes: Routes = [
     canMatch:[authMatchGuard]
   },
   {path: 'films',
-    loadComponent: () => import('../pages/films/films')
+    loadComponent: () => import('../pages/films/films'),
+    // providers: [provideHttpClient(
+    //   withInterceptors([authInterceptor]),
+    //   withRequestsMadeViaParent()
+    // )],
   },
   {path: '', redirectTo:'/login', pathMatch: 'full'},
   {path: '**', component: PageNotFound}

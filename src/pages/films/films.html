@@ -1,4 +1,9 @@
-<table matSort mat-table [dataSource]="films()">
+<mat-form-field>
+  <mat-label>Filter</mat-label>
+  <input matInput (keyup)="onFilter($event)">
+  <mat-hint>Search by substring</mat-hint>
+</mat-form-field>
+<table matSort mat-table [dataSource]="films()" multiTemplateDataRows (matSortChange)="onSortEvent($event)">
   <mat-text-column name="id" headerText="ID"></mat-text-column>
   <ng-container matColumnDef="nazov">
     <th mat-header-cell *matHeaderCellDef mat-sort-header>Názov</th>
@@ -20,7 +25,30 @@
     <th mat-header-cell *matHeaderCellDef mat-sort-header>AFI 2007</th>
     <td mat-cell *matCellDef="let film">{{film.poradieVRebricku['AFI 2007']}}</td>
   </ng-container>
+  <ng-container matColumnDef="expandedDetail">
+    <td mat-cell *matCellDef="let film" [attr.colspan]="columns().length">
+      <div class="example-element-detail-wrapper"
+        [class.example-element-detail-wrapper-expanded]="film == expandedFilm">
+        <h3>Režiséri:</h3>
+      </div>
+    </td>
+  </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="columns()"></tr>
-  <tr mat-row *matRowDef="let film; columns: columns()"></tr>
+  <tr mat-row *matRowDef="let film; columns: columns()"
+      class="example-element-row"
+      [class.example-expanded-row]="film == expandedFilm"
+      (click)="toggle(film)"
+  ></tr>
+  <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
 </table>
+@if(loading()) {
+  <p>loading ...</p>
+  <mat-spinner></mat-spinner>
+}
+<mat-paginator [length]="filmsResponse()?.totalCount || 0"
+              [pageSize]="5"
+              [pageSizeOptions]="[2, 5, 10, 25, 100]"
+              aria-label="Select page"
+              (page)="onPageEvent($event)">
+</mat-paginator>

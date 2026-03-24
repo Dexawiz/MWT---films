@@ -6,6 +6,7 @@ import { Auth } from '../entities/auth';
 import { MessageService } from './message-service';
 import { Group } from '../entities/group';
 import { environment } from '../environments/environment';
+import { Router } from '@angular/router';
 
 export const DEFAULT_NAVIGATE_AFTER_LOGIN = '/users';
 
@@ -17,6 +18,7 @@ export class UsersService {
   serverUrl = environment.restServerUrl;
   http = inject(HttpClient);
   messageService = inject(MessageService);
+  router = inject(Router);
   navigateAfterLogin = DEFAULT_NAVIGATE_AFTER_LOGIN;
 //  token = '';
   users: User[] = [
@@ -152,6 +154,13 @@ export class UsersService {
           }
           if (error.status >= 400 && error.status < 500) {
             const message = error.error.errorMessage || JSON.parse(error.error).errorMessage;
+            if (message === 'unknown token') {
+              this.token = '';
+              this.messageService.errorMessage('Session lost, please log in again');
+              this.navigateAfterLogin = this.router.url;
+              this.router.navigateByUrl('/login');
+              return EMPTY;
+            }
             this.messageService.errorMessage(message);
             return EMPTY;
           }

@@ -28,17 +28,26 @@ export class FilmsService {
     let httpParams: HttpParams = new HttpParams();
     if (orderBy) httpParams = httpParams.set('orderBy', orderBy);
     if (descending) httpParams = httpParams.set('descending', descending);
-    if (indexFrom) httpParams = httpParams.set('indexFrom', indexFrom);
+    if (! Number.isNaN(Number(indexFrom))) httpParams = httpParams.set('indexFrom', indexFrom!);
     if (indexTo) httpParams = httpParams.set('indexTo', indexTo);
     if (search) httpParams = httpParams.set('search', search);
-    let options = { params: httpParams, headers: this.getTokenHeader()};
-    return this.http.get<FilmsResponse>(this.url + 'films', options).pipe(
-      catchError(error =>  this.usersService.processError(error))
-    );
+    // let options = { params: httpParams, headers: this.getTokenHeader()};
+    let options = { params: httpParams};
+    return this.http.get<FilmsResponse>(this.url + 'films', options);
   }
 }
 
 export interface FilmsResponse {
   items: Film[],
   totalCount: number
+}
+
+export class FilmsQuery {
+  constructor(
+    public orderBy?:string, 
+    public descending?: boolean, 
+    public indexFrom?: number, 
+    public indexTo?: number, 
+    public search?: string
+  ){}
 }
