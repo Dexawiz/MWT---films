@@ -14,6 +14,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
   imports: [MaterialModule, MatProgressSpinnerModule],
   templateUrl: './films.html',
   styleUrl: './films.scss',
+  providers:[FilmsService] // vypýtame si, aby sa vytvoril service, ktorý nemá globálny charakter
 })
 export default class Films implements OnInit, AfterViewInit{
   usersService = inject(UsersService);
@@ -33,7 +34,7 @@ export default class Films implements OnInit, AfterViewInit{
 
 //  columns = signal<string[]>(['id', 'nazov', 'rok']);
   columns = computed(() => this.loggedUser()
-    ? ['id', 'nazov', 'slovenskyNazov', 'rok', 'afi1998', 'afi2007']
+    ? ['id', 'nazov', 'slovenskyNazov', 'rok', 'afi1998', 'afi2007','expand']
     : ['id', 'nazov', 'rok']
   );
 

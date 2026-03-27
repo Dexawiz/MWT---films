@@ -30,10 +30,10 @@ export const routes: Routes = [
   },
   {path: 'films',
     loadComponent: () => import('../pages/films/films'),
-    // providers: [provideHttpClient(
-    //   withInterceptors([authInterceptor]),
-    //   withRequestsMadeViaParent()
-    // )],
+    providers: [provideHttpClient(
+      withInterceptors([authInterceptor]),
+      withRequestsMadeViaParent()
+    )],
   },
   {path: '', redirectTo:'/login', pathMatch: 'full'},
   {path: '**', component: PageNotFound}

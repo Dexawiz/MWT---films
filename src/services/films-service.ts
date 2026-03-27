@@ -5,9 +5,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { UsersService } from './users-service';
 
-@Injectable({
-  providedIn: 'root',
-})
+// @Injectable({
+//   providedIn: 'root',
+// })
+@Injectable() // nepíšeme providedIn, vytvorí sa nová service pre každý Films komponent, vďaka jeho providers sekcii
 export class FilmsService {
   http = inject(HttpClient);
   usersService = inject(UsersService);
