@@ -1,0 +1,24 @@
+<mat-form-field>
+  <mat-label>Chat nickname</mat-label>
+  <input matInput [(ngModel)]="nickName" name="nick" [disabled]="connected()">
+  <mat-hint>This name will be visible by other people</mat-hint>
+</mat-form-field>
+<button matButton (click)="onConnect()" [disabled]="connected()">connect</button>
+<button matButton (click)="disconnect()" [disabled]="!connected()">disconnect</button>
+
+@if(connected()) {
+<div>
+  <mat-form-field>
+    <mat-label>Your message</mat-label>
+    <input matInput [(ngModel)]="msgToSend" name="msgToSend">
+  </mat-form-field>
+  <button matButton (click)="onSend()">send message</button>
+  <mat-list role="list">
+    @for(msg of messages(); track $index) {
+      <mat-list-item role="listitem">
+        <strong>{{msg.name}}</strong>: {{msg.message}}
+      </mat-list-item>
+    }
+  </mat-list>
+</div>
+}

@@ -35,6 +35,7 @@ export const routes: Routes = [
       withRequestsMadeViaParent()
     )],
   },
+  { path: 'chat', loadComponent: () => import('../pages/chat/chat').then(c => c.Chat)},
   {path: '', redirectTo:'/login', pathMatch: 'full'},
   {path: '**', component: PageNotFound}
 ];
