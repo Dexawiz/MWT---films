@@ -8,10 +8,11 @@ import { MatSort, Sort } from '@angular/material/sort';
 import { rxResource, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { switchMap, tap } from 'rxjs';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-films',
-  imports: [MaterialModule, MatProgressSpinnerModule],
+  imports: [MaterialModule, MatProgressSpinnerModule, RouterLink],
   templateUrl: './films.html',
   styleUrl: './films.scss',
   providers:[FilmsService] // vypýtame si, aby sa vytvoril service, ktorý nemá globálny charakter
@@ -20,6 +21,7 @@ export default class Films implements OnInit, AfterViewInit{
   usersService = inject(UsersService);
   filmsService = inject(FilmsService);
 
+  
   expandedFilm? : Film;
   toggle(film: Film) {
     this.expandedFilm = film === this.expandedFilm ? undefined : film;

@@ -1,0 +1,57 @@
+.container {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+mat-card {
+  width: 100%;
+  max-width: 900px;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 20px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.list-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+  background: #fafafa;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.complex-row mat-form-field {
+  flex: 1;
+}
+
+.info-text {
+  color: #757575;
+  font-style: italic;
+  margin: 10px 0;
+}
+
+mat-divider {
+  margin: 10px 0;
+}

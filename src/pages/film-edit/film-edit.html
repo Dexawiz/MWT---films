@@ -1,0 +1,122 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        @if (id()) {
+          Upraviť film: {{ nazov() }}
+        } @else {
+          Pridať nový film
+        }
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="form-grid">
+        
+        <section class="main-info">
+          <h3>Základné údaje</h3>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Názov filmu</mat-label>
+            <input matInput [ngModel]="nazov()" (ngModelChange)="nazov.set($event)" required>
+            @if (!nazov()) {
+              <mat-error>Názov je povinný údaj</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="row">
+            <mat-form-field appearance="outline">
+              <mat-label>Rok vydania</mat-label>
+              <input matInput type="number" [ngModel]="rok()" (ngModelChange)="rok.set($event)">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>IMDB ID</mat-label>
+              <input matInput [ngModel]="imdbID()" (ngModelChange)="imdbID.set($event)">
+            </mat-form-field>
+          </div>
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <section class="dynamic-list">
+          <div class="list-header">
+            <h3>Režiséri</h3>
+            <button mat-stroked-button color="primary" type="button" (click)="addDirector()">
+              <mat-icon>person_add</mat-icon> Pridať režiséra
+            </button>
+          </div>
+
+          @for (r of reziseri(); track $index) {
+            <div class="list-item">
+              <mat-form-field appearance="fill">
+                <mat-label>Meno</mat-label>
+                <input matInput [ngModel]="r.krstneMeno" (ngModelChange)="r.krstneMeno = $event">
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Priezvisko</mat-label>
+                <input matInput [ngModel]="r.priezvisko" (ngModelChange)="r.priezvisko = $event">
+              </mat-form-field>
+
+              <button mat-icon-button color="warn" (click)="removeDirector($index)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          } @empty {
+            <p class="info-text">Zatiaľ žiadni režiséri. Pridajte aspoň jedného.</p>
+          }
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <section class="dynamic-list">
+          <div class="list-header">
+            <h3>Postavy a herci</h3>
+            <button mat-stroked-button color="primary" type="button" (click)="addCharacter()">
+              <mat-icon>group_add</mat-icon> Pridať postavu
+            </button>
+          </div>
+
+          @for (p of postavy(); track $index) {
+            <div class="list-item complex-row">
+              <mat-form-field appearance="fill">
+                <mat-label>Názov postavy</mat-label>
+                <input matInput [ngModel]="p.postava" (ngModelChange)="p.postava = $event">
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Herec (Meno)</mat-label>
+                <input matInput [ngModel]="p.herec.krstneMeno" (ngModelChange)="p.herec.krstneMeno = $event">
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Herec (Priezvisko)</mat-label>
+                <input matInput [ngModel]="p.herec.priezvisko" (ngModelChange)="p.herec.priezvisko = $event">
+              </mat-form-field>
+
+              <button mat-icon-button color="warn" (click)="removeCharacter($index)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          } @empty {
+            <p class="info-text">Zatiaľ žiadne postavy.</p>
+          }
+        </section>
+
+      </div>
+    </mat-card-content>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-actions align="end">
+      <button mat-button type="button" (click)="cancel()">Zrušiť</button>
+      <button mat-raised-button 
+              color="primary" 
+              [disabled]="!isFormValid()" 
+              (click)="save()">
+        <mat-icon>save</mat-icon> Uložiť film
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

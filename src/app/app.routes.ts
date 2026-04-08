@@ -8,6 +8,7 @@ import { canDeactivateGuard } from '../guards/can-deactivate-guard';
 import { provideHttpClient, withInterceptors, withRequestsMadeViaParent } from '@angular/common/http';
 import { authInterceptor } from '../interceptors/auth-interceptor';
 import Films from '../pages/films/films';
+import { FilmsEdit } from '../pages/film-edit/film-edit';
 
 export const routes: Routes = [
   {path: 'users', component: UsersTable, 
@@ -36,6 +37,17 @@ export const routes: Routes = [
     )],
   },
   { path: 'chat', loadComponent: () => import('../pages/chat/chat').then(c => c.Chat)},
+
+  { path: 'films/new', 
+    component: FilmsEdit,
+    title: 'Pridať film'
+  },
+  
+  { path: 'films/edit/:id',
+     component: FilmsEdit,
+     title: 'Upraviť film'
+    },
+
   {path: '', redirectTo:'/login', pathMatch: 'full'},
   {path: '**', component: PageNotFound}
 ];

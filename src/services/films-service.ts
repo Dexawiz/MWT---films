@@ -4,6 +4,7 @@ import { Film } from '../entities/film';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { UsersService } from './users-service';
+import id from '@angular/common/locales/extra/id';
 
 // @Injectable({
 //   providedIn: 'root',
@@ -36,8 +37,28 @@ export class FilmsService {
     let options = { params: httpParams};
     return this.http.get<FilmsResponse>(this.url + 'films', options);
   }
+
+    getFilmById(id: number): Observable<Film> {
+      return this.http.get<Film>(`${this.url}films/${id}`);
+    }
+
+    deleteFilm(id: number): Observable<any> {
+      return this.http.delete(`${this.url}films/${id}`);
+    }
+
+    saveFilm(film: Film): Observable<Film> {
+      if (film.id) {
+        // Update existujúceho filmu
+        return this.http.put<Film>(`${this.url}films/${film.id}`, film);
+      } else {
+        // Vytvorenie nového filmu
+        return this.http.post<Film>(`${this.url}films`, film);
+      }
+
+    }
 }
 
+  
 export interface FilmsResponse {
   items: Film[],
   totalCount: number
