@@ -11,15 +11,6 @@
     "priezvisko" : "Lumet"
   } ],
   "postava" : [ {
-    "postava" : "Juror 3",
-    "dolezitost" : "vedľajšia postava",
-    "herec" : {
-      "id" : 651,
-      "krstneMeno" : "Lee",
-      "stredneMeno" : "J.",
-      "priezvisko" : "Cobb"
-    }
-  }, {
     "postava" : "Juror 4",
     "dolezitost" : "vedľajšia postava",
     "herec" : {
@@ -32352,4 +32343,38 @@
   "reziser" : [ ],
   "postava" : [ ],
   "poradieVRebricku" : { }
+}, {
+  "id" : 127,
+  "nazov" : "12312",
+  "slovenskyNazov" : "312123",
+  "rok" : 2000,
+  "imdbID" : "231123",
+  "reziser" : [ {
+    "id" : null,
+    "krstneMeno" : "123",
+    "stredneMeno" : "",
+    "priezvisko" : "321321"
+  } ],
+  "postava" : [ ],
+  "poradieVRebricku" : {
+    "AFI 1998" : 0,
+    "AFI 2007" : 0
+  }
+}, {
+  "id" : 128,
+  "nazov" : "213",
+  "slovenskyNazov" : "231",
+  "rok" : 2000,
+  "imdbID" : "312",
+  "reziser" : [ {
+    "id" : null,
+    "krstneMeno" : "312",
+    "stredneMeno" : "",
+    "priezvisko" : "312"
+  } ],
+  "postava" : [ ],
+  "poradieVRebricku" : {
+    "AFI 1998" : 0,
+    "AFI 2007" : 0
+  }
 } ]

@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { MaterialModule } from '../../modules/material-module';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Postava } from '../../entities/postava';
 import { Person } from '../../entities/person';
 import { MatSelectModule } from '@angular/material/select';
+import { FormErrorComponent } from '../../app/shared/form-error/form-error';
 
 
 @Component({
@@ -27,7 +28,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatSelectModule
+    MatSelectModule,
+    FormErrorComponent
   ],
   providers: [FilmsService],
   templateUrl: './film-edit.html',
@@ -47,6 +49,7 @@ export class FilmsEdit implements OnInit {
   postava = signal<Postava[]>([]);
   poradieVRebricku = signal<{[name: string]: number}>({});
   id = signal<number | undefined>(undefined);
+  errors = signal<{ nazov?: string; rok?: string; imdbID?: string; reziser?: string }>({});
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -78,37 +81,40 @@ export class FilmsEdit implements OnInit {
     }
   }
 
+  
+
   ulozit() {
     const aktualnyNazov = this.nazov().trim();
     const aktualnyRok = this.rok();
     const aktualnyimdbID = this.imdbID().trim();
-
-    if (!aktualnyNazov) {
-      alert('Chyba: Originálny názov filmu je povinný!');
-      console.error('Validácia zlyhala: Názov je prázdny.');
-      return; 
-    }
-
-    if (!aktualnyRok || aktualnyRok < 1800 || aktualnyRok > 2100) {
-      alert('Chyba: Prosím, zadajte platný rok výroby!');
-      console.error('Validácia zlyhala: Neplatný rok.');
-      return; 
-    }
 
     const platniReziseri = this.reziser().filter(r => 
       (r.krstneMeno && r.krstneMeno.trim() !== '') || 
       (r.priezvisko && r.priezvisko.trim() !== '')
     );
 
-    if(platniReziseri.length === 0){
-      alert('Chyba: Prosím, zadajte aspon 1 rezisera!!');
-      console.error('Validácia zlyhala: Neplatný reziseri.');
-      return;
+    const noveChyby: { nazov?: string; rok?: string; imdbID?: string; reziser?: string } = {};
+
+    if (!aktualnyNazov) {
+      noveChyby.nazov = 'Originálny názov filmu je povinný.';
     }
 
-    if(!aktualnyimdbID){
-      alert('Chyba: Prosím, zadajte platný imdbID!');
-      console.error('Validácia zlyhala: Neplatný imdbID.');
+    if (!aktualnyRok || aktualnyRok < 1800 || aktualnyRok > 2100) {
+      noveChyby.rok = 'Prosím, zadajte platný rok výroby (1800 - 2100).';
+    }
+
+    if (!aktualnyimdbID) {
+      noveChyby.imdbID = 'Prosím, zadajte platné IMDb ID.';
+    }
+
+    if (platniReziseri.length === 0) {
+      noveChyby.reziser = 'Prosím, zadajte aspoň jedného režiséra.';
+    }
+
+    this.errors.set(noveChyby);
+
+    if (Object.keys(noveChyby).length > 0) {
+      console.error('Validácia zlyhala:', noveChyby);
       return;
     }
 
@@ -146,6 +152,7 @@ export class FilmsEdit implements OnInit {
   }
 
   updateReziser(index: number, pole: string, hodnota: string) {
+    this.errors.update(prev => ({ ...prev, reziser: undefined }));
     this.reziser.update(stariReziseri => {
       const novyZoznam = [...stariReziseri];
       novyZoznam[index] = { ...novyZoznam[index], [pole]: hodnota };
@@ -155,6 +162,7 @@ export class FilmsEdit implements OnInit {
 
 
   pridatRezisera() {
+    this.errors.update(prev => ({ ...prev, reziser: undefined }));
     this.reziser.update(stari => [
       ...stari, 
       { krstneMeno: '', stredneMeno: '', priezvisko: '' } as Person
@@ -210,5 +218,20 @@ export class FilmsEdit implements OnInit {
       ...current,
       [name]: Number(value)
     }));
+  }
+
+  updateNazov(value: string) {
+    this.nazov.set(value);
+    this.errors.update(prev => ({ ...prev, nazov: undefined }));
+  }
+
+  updateRok(value: string) {
+    this.rok.set(value ? Number(value) : null);
+    this.errors.update(prev => ({ ...prev, rok: undefined }));
+  }
+
+  updateImdbID(value: string) {
+    this.imdbID.set(value);
+    this.errors.update(prev => ({ ...prev, imdbID: undefined }));
   }
 }

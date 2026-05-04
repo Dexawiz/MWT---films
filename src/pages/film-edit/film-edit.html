@@ -9,7 +9,8 @@
       <mat-label>Originálny názov</mat-label>
       <input matInput 
              [value]="nazov()" 
-             (input)="nazov.set($any($event.target).value)">
+             (input)="updateNazov($any($event.target).value)">
+      <app-form-error [error]="errors().nazov"></app-form-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
@@ -17,7 +18,8 @@
       <input matInput 
              type="number"
              [value]="rok()" 
-             (input)="rok.set($any($event.target).value)">
+             (input)="updateRok($any($event.target).value)">
+      <app-form-error [error]="errors().rok"></app-form-error>
     </mat-form-field>
 
     <mat-form-field appearance="fill">
@@ -31,7 +33,8 @@
       <mat-label>IMDb ID</mat-label>
       <input matInput 
              [value]="imdbID()" 
-             (input)="imdbID.set($any($event.target).value)">
+             (input)="updateImdbID($any($event.target).value)">
+      <app-form-error [error]="errors().imdbID"></app-form-error>
     </mat-form-field>
 
     <h3>Poradie v rebríčkoch</h3>
@@ -39,19 +42,21 @@
         <mat-form-field>
           <mat-label>AFI 1998</mat-label>
           <input matInput type="number" 
-                 [ngModel]="poradieVRebricku()['AFI 1998']" 
-                 (ngModelChange)="updateRanking('AFI 1998', $event)">
+                [value]="poradieVRebricku()['AFI 1998'] || 0" 
+                (input)="updateRanking('AFI 1998', $any($event.target).value)">
         </mat-form-field>
+
         <mat-form-field>
           <mat-label>AFI 2007</mat-label>
           <input matInput type="number" 
-                 [ngModel]="poradieVRebricku()['AFI 2007']" 
-                 (ngModelChange)="updateRanking('AFI 2007', $event)">
+                [value]="poradieVRebricku()['AFI 2007'] || 0" 
+                (input)="updateRanking('AFI 2007', $any($event.target).value)">
         </mat-form-field>
       </div>
-
+      
     <mat-divider style="margin: 10px 0;"></mat-divider>
     <h3>Režiséri</h3>
+    <app-form-error [error]="errors().reziser"></app-form-error>
     @for (r of reziser(); track $index) {
       <div style="display: flex; gap: 10px; align-items: center;">
                 <mat-form-field appearance="fill" style="flex: 1;">
