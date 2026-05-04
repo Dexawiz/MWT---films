@@ -43,22 +43,22 @@ export class FilmsService {
     }
 
     deleteFilm(id: number): Observable<any> {
-      return this.http.delete(`${this.url}films/${id}`);
+      return this.http.post(`${this.url}films`, {
+        id: id,
+        _method: 'DELETE'
+      });
     }
 
     saveFilm(film: Film): Observable<Film> {
-      if (film.id) {
-        // Update existujúceho filmu
-        return this.http.put<Film>(`${this.url}films/${film.id}`, film);
-      } else {
-        // Vytvorenie nového filmu
-        return this.http.post<Film>(`${this.url}films`, film);
-      }
-
+      return this.http.post<Film>(`${this.url}films`, film).pipe(
+        catchError(err => {
+          console.error('Save film error:', err);
+          throw err;
+        })
+      );
     }
 }
 
-  
 export interface FilmsResponse {
   items: Film[],
   totalCount: number

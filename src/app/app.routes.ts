@@ -7,7 +7,6 @@ import { authGuard, authMatchGuard } from '../guards/auth-guard';
 import { canDeactivateGuard } from '../guards/can-deactivate-guard';
 import { provideHttpClient, withInterceptors, withRequestsMadeViaParent } from '@angular/common/http';
 import { authInterceptor } from '../interceptors/auth-interceptor';
-import Films from '../pages/films/films';
 import { FilmsEdit } from '../pages/film-edit/film-edit';
 
 export const routes: Routes = [
@@ -36,18 +35,19 @@ export const routes: Routes = [
       withRequestsMadeViaParent()
     )],
   },
-  { path: 'chat', loadComponent: () => import('../pages/chat/chat').then(c => c.Chat)},
-
-  { path: 'films/new', 
+{
+    path: 'films/new', 
     component: FilmsEdit,
-    title: 'Pridať film'
+    providers: [provideHttpClient(withInterceptors([authInterceptor]), withRequestsMadeViaParent())]
   },
   
-  { path: 'films/edit/:id',
-     component: FilmsEdit,
-     title: 'Upraviť film'
-    },
+  { 
+    path: 'films/edit/:id', 
+    component: FilmsEdit,
+    providers: [provideHttpClient(withInterceptors([authInterceptor]), withRequestsMadeViaParent())]
+  },
 
+  { path: 'chat', loadComponent: () => import('../pages/chat/chat').then(c => c.Chat)},
   {path: '', redirectTo:'/login', pathMatch: 'full'},
   {path: '**', component: PageNotFound}
 ];

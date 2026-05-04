@@ -36,7 +36,7 @@ export default class Films implements OnInit, AfterViewInit{
 
 //  columns = signal<string[]>(['id', 'nazov', 'rok']);
   columns = computed(() => this.loggedUser()
-    ? ['id', 'nazov', 'slovenskyNazov', 'rok', 'afi1998', 'afi2007','expand']
+    ? ['id', 'nazov', 'slovenskyNazov', 'rok', 'afi1998', 'afi2007', 'actions','expand']
     : ['id', 'nazov', 'rok']
   );
 

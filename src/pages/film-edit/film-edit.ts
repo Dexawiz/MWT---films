@@ -9,92 +9,206 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Postava } from '../../entities/postava';
+import { Person } from '../../entities/person';
+import { MatSelectModule } from '@angular/material/select';
+
 
 @Component({
   selector: 'app-film-edit',
   standalone: true,
-  imports: [FormsModule,
+  imports: [
+    FormsModule,
     RouterLink,
-    MatCardModule,      
+    MaterialModule,
+    MatDividerModule,
+    MatCardModule,
     MatFormFieldModule,
-    MatInputModule,    
-    MatButtonModule,   
+    MatInputModule,
+    MatButtonModule,
     MatIconModule,
-    MatDividerModule],
+    MatSelectModule
+  ],
+  providers: [FilmsService],
   templateUrl: './film-edit.html',
   styleUrl: './film-edit.scss'
 })
 
-
 export class FilmsEdit implements OnInit {
-
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private filmsService = inject(FilmsService);
 
+  nazov = signal<string>('');
+  slovenskyNazov = signal<string>('');
+  rok = signal<number | null>(null);
+  imdbID = signal<string>('');
+  reziser = signal<Person[]>([]);
+  postava = signal<Postava[]>([]);
+  poradieVRebricku = signal<{[name: string]: number}>({});
   id = signal<number | undefined>(undefined);
-  nazov = signal('');
-  rok = signal<number>(new Date().getFullYear());
-  imdbID = signal('');
-  reziseri = signal<any[]>([]); 
-  postavy = signal<any[]>([]);
 
-  isFormValid = computed(() => {
-    return this.nazov().trim().length > 0 && this.rok() > 1800;
-  });
-    ngOnInit() {
-      const filmId = this.route.snapshot.paramMap.get('id');
-      if (filmId) {
-        this.filmsService.getFilmById(+filmId).subscribe(film => {
-          this.id.set(film.id);
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    this.poradieVRebricku = signal<{[name: string]: number}>({
+      'AFI 1998': 0,
+      'AFI 2007': 0
+    });
+    
+    if (id) {
+      this.filmsService.getFilmById(Number(id)).subscribe({
+        next: (film) => {
+          console.log('Načítaný film:', film);
           this.nazov.set(film.nazov);
+          this.slovenskyNazov.set(film.slovenskyNazov);
           this.rok.set(film.rok);
           this.imdbID.set(film.imdbID);
-          this.reziseri.set(film.reziser);
-          this.postavy.set(film.postava);
-        });
-      }
+          this.reziser.set(film.reziser);
+          this.postava.set(film.postava);
+          this.poradieVRebricku.set(film.poradieVRebricku);
+          this.id.set(film.id);
+        },
+        error: (err) => {
+          console.error('Chyba pri načítaní filmu:', err);
+        }
+      });
+    } else {
+      console.log('Režim pridávania nového filmu (id sa nenašlo).');
+    }
+  }
+
+  ulozit() {
+    const aktualnyNazov = this.nazov().trim();
+    const aktualnyRok = this.rok();
+    const aktualnyimdbID = this.imdbID().trim();
+
+    if (!aktualnyNazov) {
+      alert('Chyba: Originálny názov filmu je povinný!');
+      console.error('Validácia zlyhala: Názov je prázdny.');
+      return; 
     }
 
-    removeDirector(index: number) {
-      this.reziseri.update(list => list.filter((_, i) => i !== index));
+    if (!aktualnyRok || aktualnyRok < 1800 || aktualnyRok > 2100) {
+      alert('Chyba: Prosím, zadajte platný rok výroby!');
+      console.error('Validácia zlyhala: Neplatný rok.');
+      return; 
     }
 
-    addDirector() {
-      this.reziseri.update(list => [
-      ...list, 
-      { krstneMeno: '', priezvisko: '', stredneMeno: '' } 
-      ]);
+    const platniReziseri = this.reziser().filter(r => 
+      (r.krstneMeno && r.krstneMeno.trim() !== '') || 
+      (r.priezvisko && r.priezvisko.trim() !== '')
+    );
+
+    if(platniReziseri.length === 0){
+      alert('Chyba: Prosím, zadajte aspon 1 rezisera!!');
+      console.error('Validácia zlyhala: Neplatný reziseri.');
+      return;
     }
 
-    removeCharacter(index: number) {
-    this.postavy.update(list => list.filter((_, i) => i !== index));
+    if(!aktualnyimdbID){
+      alert('Chyba: Prosím, zadajte platný imdbID!');
+      console.error('Validácia zlyhala: Neplatný imdbID.');
+      return;
     }
 
-    addCharacter() {
-      this.postavy.update(list => [
-        ...list, 
-        { postava: '', dolezitost: 'vedľajšia postava', herec: { krstneMeno: '', priezvisko: '', stredneMeno: '' } }
-      ]);
-    }
+    const platnePostavy = this.postava().filter(p => 
+      (p.postava && p.postava.trim() !== '') || 
+      (p.herec && (
+        (p.herec.krstneMeno && p.herec.krstneMeno.trim() !== '') || 
+        (p.herec.priezvisko && p.herec.priezvisko.trim() !== '')
+      ))
+    )
 
-    cancel() {
-      this.router.navigate(['/films']);
-    }
-
-    save() {
-    const filmData = {
-      id: this.id(),
-      nazov: this.nazov(),
-      rok: this.rok(),
-      imdbID: this.imdbID(),
-      reziser: this.reziseri(),
-      postava: this.postavy()
+    const filmNaUlozenie = {
+      id: this.id(), 
+      nazov: aktualnyNazov,
+      slovenskyNazov: this.slovenskyNazov().trim(),
+      rok: Number(aktualnyRok), 
+      imdbID: this.imdbID().trim(),
+      reziser: platniReziseri,
+      postava: platnePostavy,
+      poradieVRebricku: this.poradieVRebricku()
     };
 
-  
-    console.log('Ukladám:', filmData);
+    console.log('Odosielam validovaný film na server:', filmNaUlozenie);
+
+    this.filmsService.saveFilm(filmNaUlozenie).subscribe({
+      next: (ulozenyFilm) => {
+        console.log('Film úspešne uložený!', ulozenyFilm);
+        this.router.navigate(['/films']);
+      },
+      error: (chyba) => {
+        console.error('Chyba pri ukladaní filmu:', chyba);
+        alert('Nepodarilo sa uložiť film. Skontrolujte konzolu pre viac detailov.');
+      }
+    });
+  }
+
+  updateReziser(index: number, pole: string, hodnota: string) {
+    this.reziser.update(stariReziseri => {
+      const novyZoznam = [...stariReziseri];
+      novyZoznam[index] = { ...novyZoznam[index], [pole]: hodnota };
+      return novyZoznam;
+    });
+  }
+
+
+  pridatRezisera() {
+    this.reziser.update(stari => [
+      ...stari, 
+      { krstneMeno: '', stredneMeno: '', priezvisko: '' } as Person
+    ]);
+  }
+
+  // Method for updating a specific field of a Postava at a given index
+
+  updatePostava(index: number, pole: string, hodnota: string) {
+    this.postava.update(starePostavy => {
+      const novyZoznam = [...starePostavy];
+      novyZoznam[index] = { ...novyZoznam[index], [pole]: hodnota };
+      return novyZoznam;
+    });
+  }
+
+  // Method for updating a specific field of the Herec within a Postava at a given index
+
+  updateHerecVPostave(index: number, pole: string, hodnota: string) {
+    this.postava.update(starePostavy => {
+      const novyZoznam = [...starePostavy];
+      const staraPostava = novyZoznam[index];
+      novyZoznam[index] = { 
+        ...staraPostava, 
+        herec: { ...staraPostava.herec, [pole]: hodnota } 
+      };
+      
+      return novyZoznam;
+    });
+  }
+
+  pridatPostavu() {
+    this.postava.update(stare => [
+      ...stare, 
+      {
+        postava: '',
+        dolezitost: 'vedľajšia postava',
+        herec: { krstneMeno: '', stredneMeno: '', priezvisko: '' }
+       } as Postava
+    ]);
+  }
+
+  odstranitRezisera(index: number) {
+    this.reziser.update(stari => stari.filter((_, i) => i !== index));
+  }
+
+  odstranitPostavu(index: number) {
+    this.postava.update(stare => stare.filter((_, i) => i !== index));
+  }
+
+  updateRanking(name: string, value: any) {
+    this.poradieVRebricku.update(current => ({
+      ...current,
+      [name]: Number(value)
+    }));
   }
 }
-
-
