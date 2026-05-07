@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MaterialModule } from '../../modules/material-module';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -40,7 +40,6 @@ export class FilmsEdit implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private filmsService = inject(FilmsService);
-
   nazov = signal<string>('');
   slovenskyNazov = signal<string>('');
   rok = signal<number | null>(null);
@@ -49,6 +48,9 @@ export class FilmsEdit implements OnInit {
   postava = signal<Postava[]>([]);
   poradieVRebricku = signal<{[name: string]: number}>({});
   id = signal<number | undefined>(undefined);
+
+  cardTitle = computed(() => this.id() ? 'Upraviť film' : 'Pridať film');
+
   errors = signal<{ nazov?: string; rok?: string; imdbID?: string; reziser?: string }>({});
 
   ngOnInit(): void {
@@ -81,7 +83,6 @@ export class FilmsEdit implements OnInit {
     }
   }
 
-  
 
   ulozit() {
     const aktualnyNazov = this.nazov().trim();
